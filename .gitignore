@@ -43,3 +43,5 @@ Debug/rc.command.1.tlog
 Debug/rc.read.1.tlog
 Debug/rc.write.1.tlog
 Debug/vc100.idb
+Release/
+ThreadPool.opensdf
