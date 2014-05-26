@@ -7,6 +7,10 @@
 
 #include "targetver.h"
 
+// check memory leaks
+#define CRTDBG_MAP_ALLOC
+//#include "vld.h"
+
 #include <stdio.h>
 #include <tchar.h>
 #include <iostream>
@@ -15,6 +19,10 @@
 #include <vector>
 #include <stack>
 #include <deque>
+#include <share.h>
+#include <assert.h>
+#include <math.h>
+#include <crtdbg.h>
 
-
+using namespace std;
 // TODO: 在此处引用程序需要的其他头文件

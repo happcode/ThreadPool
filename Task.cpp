@@ -3,14 +3,12 @@
 
 using namespace std;
 
-CTask::CTask(void)
-	: m_nLevel(LOW)
+CTask::CTask( int nTaskIndex, PRIORITY_PROP nLevel, int nSleep)
+	: m_nTaskIndex(nTaskIndex)
+	, m_nLevel(nLevel)
+	, m_nSleep(nSleep)
+	, m_bFinish(false)
 {
-}
-
-CTask::CTask( PRIORITY_PROP nLevel )
-{
-	m_nLevel = nLevel;
 }
 
 
@@ -18,7 +16,10 @@ CTask::~CTask(void)
 {
 }
 
-void CTask::Work()
+void CTask::Work(DWORD& nThreadId)
 {
-	cout << "I'm working......" << endl;
+	printf("Task Index = %4d, Exe Thread Index = %4d, Level = %s, SleepTime = %4d\r\n", m_nTaskIndex, nThreadId, (m_nLevel==LOW)?"ตอ":"ธ฿", m_nSleep);
+
+	Sleep(m_nSleep);
+	m_bFinish = true;
 }

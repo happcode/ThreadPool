@@ -7,13 +7,15 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include <list>
+#include "IThreadPoolInterface.h"
+#include "Lock.h"
 
 const int Thread_Count = 10;
 
+class CLock;
 class CTask;
 class CWorkThread;
-class CLock;
-class CThreadPoolMang
+class CThreadPoolMang:public IThreadPool
 {
 public:
 	CThreadPoolMang(int nThreadCount = Thread_Count);
@@ -30,11 +32,15 @@ public:
 	void AddTask(CTask* pTask);
 
 	// 线程状态改变时，放入不同的容器中
-	void SwitchThreadPos(CWorkThread* pThread, bool bActiveStat);
-
+	void BlockThread(CWorkThread* pThread);
 
 	// 获取数据
 	int GetThreadCount(){return m_nThreadCount;}
+	bool IsTaskFinsihAll(){return m_sBlockThread.size() == m_nThreadCount;}
+	CLock& GetLock(){return m_lGlobalCounter;}
+
+	//
+	HANDLE GetThreadHandle();
 
 private:
 	/************************************************************************/
@@ -49,15 +55,23 @@ private:
 	// 存放执行过的任务(应该是谁创建谁释放)
 	//std::vector<CTask*> m_vcInvalidTask;
 
-	// 存放处于激活状态的线程
-	std::list<CWorkThread*> m_lstActiveThread;
-	// 存放阻塞状态的线程
+	// 存放处于阻塞状态的线程
 	std::stack<CWorkThread*> m_sBlockThread;
+	// 存放激活状态的线程
+	std::list<CWorkThread*> m_lstActiveThread;
 
 	//
 	int m_nThreadCount;
 
-	// 互斥锁
-	CLock* m_pLockThreadContainer;	
+	// 空闲线程互斥锁
+	CLock m_lActiveThread;
+	// 阻塞线程互斥锁
+	CLock m_lBlockThread;
+	// 任务互斥锁
+	CLock m_lTaskDeque;
+
+
+	// 全局计数器
+	CLock m_lGlobalCounter;
 };
 

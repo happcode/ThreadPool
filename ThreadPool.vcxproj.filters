@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="header">
+      <UniqueIdentifier>{40cac22c-1c5b-4f1f-928a-74e60f530a9a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -35,6 +38,12 @@
     </ClInclude>
     <ClInclude Include="Lock.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ITaskInterface.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="IThreadPoolInterface.h">
+      <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

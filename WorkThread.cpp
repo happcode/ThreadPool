@@ -1,13 +1,22 @@
 #include "StdAfx.h"
 #include "WorkThread.h"
+#include "ThreadPoolMang.h"
 #include "Task.h"
 
 
-CWorkThread::CWorkThread(void)
-	: m_hThread(NULL)
+CWorkThread::CWorkThread(CThreadPoolMang* pThreadManger, int nThreadIndex)
+	: m_pThreadPoolManger(pThreadManger)
+	, m_hThread(NULL)
 	, m_hEvent(NULL)
 	, m_pTask(NULL)
+	, m_nThreadIndex(0)
+	, m_bIsExit(false)
 {
+	assert(m_pThreadPoolManger != NULL);
+	//pThreadManger->GetLock().Lock();
+	m_nThreadIndex = nThreadIndex;
+	//pThreadManger->GetLock().UnLock();
+
 	// 初始化
 	Initial();
 }
@@ -21,63 +30,66 @@ CWorkThread::~CWorkThread(void)
 
 void CWorkThread::Initial()
 {	
-	// 创建线程
-	DWORD dwThreadId;
-	m_hThread = CreateThread(NULL, 0, threadPro, this, 0, &dwThreadId);
+	// 创建线程	
+	m_hThread = CreateThread(NULL, 0, threadPro, this, 0, NULL);
 	// 创建事件对象，用于控制何时执行任务
 	// 自动置位：每次结束后使线程处于等待状态；初始状态：该线程是否拥有该事件
 	m_hEvent = CreateEvent(NULL, false, false, NULL);
 }
 
 void CWorkThread::Release()
-{
+{	
 	// 关闭线程、事件
-	CloseHandle(m_hThread);
 	CloseHandle(m_hEvent);
+	CloseHandle(m_hThread);	
 }
 
 DWORD WINAPI CWorkThread::threadPro( LPVOID pParam )
 {	
 	CWorkThread* pThread = (CWorkThread*)pParam;
-	if (NULL == pThread)
-	{
-		// 
-		return -1;
-	}
+	assert(pThread != NULL);
 
 	// 一直判断线程状态、是否进行工作
-	while (WAIT_OBJECT_0 != WaitForSingleObject(pThread->GetEvent(), INFINITE))
+	while(true)
 	{
-		// 工作
-		pThread->ExecuteTask();
-		// 善后
-		pThread->FinishWork();
+		if (WAIT_OBJECT_0 == WaitForSingleObject(pThread->GetEvent(), INFINITE))
+		{
+			// 工作
+			pThread->ExecuteTask();
+			// 善后
+			pThread->AfterWork();		
+		}
 	}
 
 	return 0;
 }
 
 // 线程执行任务前的准备工作
-bool CWorkThread::StartWork(CTask* pTask)
+bool CWorkThread::BeforeWork(CTask* pTask)
 {
+	// 分配工作
 	m_pTask = pTask;
-	// 线程即将处于激活状态，放入激活列表中
-
 	// 激活线程 开始工作
 	SetEvent(m_hEvent);
 	return true;
 }
 
 // 线程执行任务后的善后工作
-bool CWorkThread::FinishWork()
+bool CWorkThread::AfterWork()
 {	
+	// 释放任务资源
+	delete m_pTask;
+	m_pTask = NULL;
+
 	// 这时线程处于空闲状态，将其放入到线程池的空闲栈中
+	m_pThreadPoolManger->BlockThread(this);
 	return true;
 }
 
 bool CWorkThread::ExecuteTask()
 {
+	assert(m_pTask != NULL);
 	// 执行工作
-	m_pTask->Work();
+	m_pTask->Work(m_nThreadIndex);
 	return true;
 }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ThreadPool", "ThreadPool\ThreadPool.vcxproj", "{2D5463CE-92AB-4389-A05D-A833A1B9C384}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ThreadPool", "ThreadPool.vcxproj", "{2D5463CE-92AB-4389-A05D-A833A1B9C384}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

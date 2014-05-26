@@ -6,6 +6,8 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
+#include "ITaskInterface.h"
+
 // 任务优先级权限
 enum PRIORITY_PROP
 {
@@ -13,21 +15,24 @@ enum PRIORITY_PROP
 	HIGH
 };
 
-class CTask
+class CTask : public ITask
 {
 public:
-	CTask(void);
-	CTask(PRIORITY_PROP nLevel);
+	CTask(int nTaskIndex, PRIORITY_PROP nLevel = LOW, int nSleep = 10000);
 	~CTask(void);
 
 public:
-	void Work();
+	virtual void Work(DWORD& nThreadId);
 
 
 	// 取数据
 	PRIORITY_PROP PriorityLevel(){return m_nLevel;}
 
+	bool TaskFinished(){return m_bFinish;}
 private:
 	PRIORITY_PROP m_nLevel;
+	bool m_bFinish;
+	int m_nSleep;
+	int m_nTaskIndex;
 };
 
